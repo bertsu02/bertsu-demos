@@ -339,7 +339,7 @@ if (tileIndex === position) {
   const player = document.createElement("div");
   player.className = "player";
   const img = document.createElement("img");
-  img.src = "src/img/123.png";
+  img.src = "/src/img/123.png";
   img.alt = "Player";
   img.style.transform = `rotate(${angle}deg)`; // 👈 Set rotation
   player.appendChild(img);
@@ -349,7 +349,7 @@ if (tileIndex === position) {
         } else if (r === 5 && c === 5) {
             cell.classList.add("logo1");
             const logoImg = document.createElement("img");
-            logoImg.src = "src/img/gambapoly.png"; 
+            logoImg.src = "/src/img/gambapoly.png"; 
             logoImg.alt = "Logo";
             logoImg.style.maxWidth = "100%";
             logoImg.style.maxHeight = "100%";
