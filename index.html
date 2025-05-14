@@ -1,23 +1,466 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Metron's Giveaways</title>
-    <link rel="icon" href="src/img/favicon.ico" type="image/x-icon" sizes="16x16">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Saira+Stencil+One&display=swap" rel="stylesheet">
-    <link rel='stylesheet' href='/src/styles/styles.css'>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
-  </head>
-  <body>
-  <div class="navigation">
-    <span><img class="logo" src="/src/img/logo.png"></img></span>
-    <a href="index.html">Home</a>
-    <a href="src/plinko.html">Plinko</a>
-    <a href="src/deal.html">Deal Or No Deal</a>
-  </div>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Saira+Stencil+One&display=swap" rel="stylesheet">
+  <link rel='stylesheet' href='/src/styles/styles.css'>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: rgb(80, 80, 80);
+    }
+
+    .container {
+      display: flex;
+      gap: 30px;
+      align-items: flex-start;
+    }
+
+    #board {
+      display: grid;
+      grid-template-columns: repeat(11, 70px);
+      grid-template-rows: repeat(11, 70px);
+      width: 660px;
+      height: 660px;
+      border-radius: 16px;
+      position: relative;
+    }
+
+    .tile {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+      box-sizing: border-box;
+      border: 1px solid #ddd;
+      position: relative;
+      border-radius: 8px;
+    }
+#controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-left: 10%;
+}
+
+    .prize {
+      background: linear-gradient(to bottom right, #d0f0c0, #a5d6a7);
+      color: #1b5e20;
+    }
+
+    .bankrupt {
+      background: linear-gradient(to bottom right, #ffcdd2, #ef9a9a);
+      color: #b71c1c;
+    }
+
+    .event {
+      background: linear-gradient(to bottom right, #bbdefb, #90caf9);
+      color: #0d47a1;
+    }
+
+    .start {
+      background: gold;
+      color: black;
+    }
+
+    .player {
+      width: 50px;
+      height: 50px;
+      position: absolute;
+    }
+
+    .player img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+
+    .tile.hidden {
+      visibility: hidden;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #ffffff;
+      padding: 20px 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    #dice {
+      font-size: 80px;
+      margin-bottom: 20px;
+      transition: transform 0.3s ease;
+      margin-left: 150px;
+      margin-right: 50px;
+      color: white;
+    }
+
+    button {
+      padding: 10px 25px;
+      font-size: 18px;
+      border: none;
+      background-color: #1976d2;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-left: 100px;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #1565c0;
+    }
+
+    #status {
+      margin-top: 20px;
+      font-size: 16px;
+      text-align: center;
+      width: 300px; 
+      color: white;
+      margin: 50px 0 50px 100px; 
+      white-space: normal;
+    }
+
+.player img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+.logo1 {
+  grid-row: 6;
+  grid-column: 6;
+  position: relative;
+  width: 300px;
+  height: 300px;
+  overflow: visible;
+  z-index: 10; 
+  border: none;
+}
+
+
+.logo1 img {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  transform: translate(-50%, -50%);
+  width: 300px; 
+  height: 300px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+
+#eventPopup {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 40%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px 30px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 1000;
+  max-width: 300px;
+  text-align: center;
+  font-size: 26px;
+}
+
+  </style>
+</head>
+<body>
+
+<div id="board"></div>
+<div id="controls">
+  <div id="dice">🎲</div>
+  <button onclick="rollDice()">Roll Dice</button>
+  <button onclick="resetGame()">Reset</button>
+  <p id="status">Balance: $0</p>
+</div>
+
+<div id="eventPopup">
+  <p id="eventDescription"></p>
+  <button onclick="closeEventPopup()">OK</button>
+</div>
+
+<script>
+  const totalTiles = 40;
+  let position = 0;
+  let balance = 0;
+  const winAmount = 50;
+  const tileMap = [];
+  const tileTypes = Array(totalTiles).fill("neutral");
+  const prizeValues = {};
+  const eventTiles = new Set();
+  const bankruptSet = new Set();
+
+  const board = document.getElementById("board");
+  const diceDisplay = document.getElementById("dice");
+
+  for (let i = 0; i < 11; i++) tileMap.push({ row: 0, col: i });
+  for (let i = 1; i < 10; i++) tileMap.push({ row: i, col: 10 });
+  for (let i = 10; i >= 0; i--) tileMap.push({ row: 10, col: i });
+  for (let i = 9; i > 0; i--) tileMap.push({ row: i, col: 0 });
+
+  while (bankruptSet.size < 5) {
+    const rand = Math.floor(Math.random() * totalTiles);
+    if (rand !== 0) bankruptSet.add(rand);
+  }
+
+  while (eventTiles.size < 10) {
+    const rand = Math.floor(Math.random() * totalTiles);
+    if (!bankruptSet.has(rand) && rand !== 0) {
+      eventTiles.add(rand);
+    }
+  }
+
+  for (let i = 0; i < totalTiles; i++) {
+    if (i === 0) {
+      tileTypes[i] = "start";
+    } else if (eventTiles.has(i)) {
+      tileTypes[i] = "event";
+    } else if (bankruptSet.has(i)) {
+      tileTypes[i] = "bankrupt";
+    } else {
+      tileTypes[i] = "prize";
+      prizeValues[i] = Math.floor(Math.random() * 5) + 1;
+    }
+  }
+
+  const eventDescriptions = {
+    1: "You feel degen and you deposited.",
+    2: "You won a tip!",
+    3: "You invested in memecoin and lost it.",
+    4: "You joined a free and won!",
+    5: "You joined a free and lost.",
+    6: "Gas fees ate your wallet.",
+    7: "You ran your daily up",
+    8: "You were too slow to join the free",
+    9: "Monthly Out!",
+    10: "IRS found your wallet.",
+  };
+
+  function triggerEvent() {
+    const eventId = Math.floor(Math.random() * 10) + 1;
+    let message = eventDescriptions[eventId];
+
+    switch (eventId) {
+      case 1:
+        const factor = Math.random() < 0.5 ? 0.5 : 1.5;
+        balance = Math.floor(balance * factor);
+        message += ` Your balance is now ${factor}x!`;
+        break;
+      case 2:
+      case 4:
+        balance += 5;
+        message += " +$5 ";
+        break;
+      case 3:
+      case 6:
+        balance = Math.max(0, balance - 5);
+        message += " -$5 ";
+        break;
+      case 7:
+        balance += 7;
+        message += " You gained $5!";
+        break;
+      case 9:
+        balance += 5;
+        message += " You gained $5!";
+        break;
+      case 10:
+        balance = Math.floor(balance / 2);
+        message += " You lost half your balance!";
+        break;
+      default:
+        message += " Nothing happened.";
+    }
+
+    document.getElementById("eventDescription").textContent = message;
+    document.getElementById("eventPopup").style.display = "block";
+    updateStatus(message);
+  }
+
+  function closeEventPopup() {
+    document.getElementById("eventPopup").style.display = "none";
+    drawBoard();
+  }
+
+  function updateStatus(msg) {
+    document.getElementById("status").textContent = `${msg} Balance: $${balance}`;
+  }
+
+  function drawBoard() {
+    board.innerHTML = "";
+
+    for (let r = 0; r < 11; r++) {
+      for (let c = 0; c < 11; c++) {
+        const cell = document.createElement("div");
+        cell.className = "tile";
+
+        const tileIndex = tileMap.findIndex(t => t.row === r && t.col === c);
+        if (tileIndex !== -1) {
+          const type = tileTypes[tileIndex];
+          cell.classList.add(type);
+
+          if (type === "bankrupt") cell.textContent = "💣";
+          else if (type === "prize") cell.textContent = `$${prizeValues[tileIndex]}`;
+          else if (type === "event") cell.textContent = "❓";
+          else if (type === "start") cell.textContent = "Start";
+
+let previousPosition = position - 1;
+if (previousPosition < 0) previousPosition = totalTiles - 1;
+
+// Get previous and current tile positions
+const from = tileMap[previousPosition];
+const to = tileMap[position];
+
+let angle = 0;
+if (to.row < from.row) angle = -90;       // up
+else if (to.row > from.row) angle = 90;   // down
+else if (to.col > from.col) angle = 0;    // right
+else if (to.col < from.col) angle = 180;  // left
+
+// Apply player image with rotation
+if (tileIndex === position) {
+  const player = document.createElement("div");
+  player.className = "player";
+  const img = document.createElement("img");
+  img.src = "src/img/123.png";
+  img.alt = "Player";
+  img.style.transform = `rotate(${angle}deg)`; // 👈 Set rotation
+  player.appendChild(img);
+  cell.appendChild(player);
+}
+
+        } else if (r === 5 && c === 5) {
+            cell.classList.add("logo1");
+            const logoImg = document.createElement("img");
+            logoImg.src = "src/img/gambapoly.png"; 
+            logoImg.alt = "Logo";
+            logoImg.style.maxWidth = "100%";
+            logoImg.style.maxHeight = "100%";
+            cell.appendChild(logoImg);
+
+        } else {
+          cell.classList.add("hidden");
+        }
+
+        board.appendChild(cell);
+      }
+    }
+  }
+
+  function animateDice(callback) {
+    let count = 0;
+    const interval = setInterval(() => {
+      const roll = Math.floor(Math.random() * 6) + 1;
+      diceDisplay.textContent = ["🎲", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"][roll];
+      diceDisplay.style.transform = `rotate(${Math.random() * 360}deg)`;
+      count++;
+      if (count >= 10) {
+        clearInterval(interval);
+        callback(roll);
+      }
+    }, 80);
+  }
+
+  function movePlayer(steps, callback) {
+    let moves = 0;
+    const interval = setInterval(() => {
+      position = (position + 1) % totalTiles;
+      drawBoard();
+      moves++;
+      if (moves >= steps) {
+        clearInterval(interval);
+        callback();
+      }
+    }, 300);
+  }
+
+  function rollDice() {
+    if (balance >= winAmount) return;
+
+    animateDice(roll => {
+      movePlayer(roll, () => {
+        let message = `You rolled a ${roll}. `;
+
+        if (eventTiles.has(position)) {
+          triggerEvent();
+        } else {
+          const tileType = tileTypes[position];
+          if (tileType === "bankrupt") {
+            message += "Bankrupt tile! 💥 Game Over.";
+            document.querySelector("button").disabled = true;
+          } else if (tileType === "prize") {
+            const prize = prizeValues[position];
+            balance += prize;
+            message += `You won $${prize}.`;
+            if (balance >= winAmount) {
+              message += " 🎉 You win!";
+              document.querySelector("button").disabled = true;
+            }
+          }
+          updateStatus(message);
+        }
+
+        drawBoard();
+      });
+    });
+  }
+
+  function resetGame() {
+  position = 0;
+  balance = 0;
+  document.querySelector("button").disabled = false;
+  updateStatus("Game reset. Balance: $0");
+
+
+  bankruptSet.clear();
+  eventTiles.clear();
+
+  while (bankruptSet.size < 5) {
+    const rand = Math.floor(Math.random() * totalTiles);
+    if (rand !== 0) bankruptSet.add(rand);
+  }
+
+  while (eventTiles.size < 10) {
+    const rand = Math.floor(Math.random() * totalTiles);
+    if (!bankruptSet.has(rand) && rand !== 0) {
+      eventTiles.add(rand);
+    }
+  }
+
+  for (let i = 0; i < totalTiles; i++) {
+    if (i === 0) {
+      tileTypes[i] = "start";
+    } else if (eventTiles.has(i)) {
+      tileTypes[i] = "event";
+    } else if (bankruptSet.has(i)) {
+      tileTypes[i] = "bankrupt";
+    } else {
+      tileTypes[i] = "prize";
+      prizeValues[i] = Math.floor(Math.random() * 5) + 1;
+    }
+  }
+
+  drawBoard();
+}
+
+  drawBoard();
+</script>
+</body>
 </html>

@@ -6,8 +6,6 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        plinko: resolve(__dirname, 'src/plinko.html'),
-        deal: resolve(__dirname, 'src/deal.html'),
       },
     },
   },
